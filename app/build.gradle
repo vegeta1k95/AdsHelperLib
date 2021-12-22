@@ -30,11 +30,14 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:20.5.0'
 }
 
-project.afterEvaluate {
+afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
                 from components.release
+                groupId = 'com.github.vegeta1k95'
+                artifactId = 'AdsHelperLib'
+                version = '1.0.3'
             }
         }
     }
