@@ -47,7 +47,6 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.vegeta1k95'
                 artifactId = 'AdsHelperLib'
-                version = '1.0.3'
             }
         }
     }
