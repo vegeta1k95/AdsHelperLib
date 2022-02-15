@@ -139,8 +139,12 @@ public class AdsHelper {
     }
 
     public static void showInter(Activity activity) {
-        if (mInter != null && activity != null && ADS_ENABLED)
+        if (mInter != null && activity != null) {
+            Log.d(LOG_TAG, "Showing interstitial...");
             mInter.show(activity);
+        } else {
+            Log.d(LOG_TAG, "Failed to show interstitial!");
+        }
     }
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
