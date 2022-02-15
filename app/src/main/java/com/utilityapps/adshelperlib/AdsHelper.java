@@ -30,6 +30,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.nativead.NativeAdView;
@@ -78,7 +80,8 @@ public class AdsHelper {
                     ADS_ENABLED = config.getBoolean(KEY_ADS_ENABLED);
                     if (ADS_ENABLED) {
                         Log.d(LOG_TAG, "Ads enabled!");
-                        mAppOpenAdManager = new AppOpenAdManager(application);
+                        MobileAds.initialize(application, initializationStatus
+                                -> mAppOpenAdManager = new AppOpenAdManager(application));
                     } else {
                         Log.d(LOG_TAG, "Ads disabled!");
                     }
