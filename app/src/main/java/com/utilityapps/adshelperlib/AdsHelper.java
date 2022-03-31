@@ -3,11 +3,8 @@ package com.utilityapps.adshelperlib;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -17,23 +14,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleObserver;
 
-import com.google.ads.mediation.admob.AdMobAdapter;
-import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -43,25 +31,19 @@ import java.util.Map;
 
 public class AdsHelper {
 
-    private static boolean ADS_ENABLED = false;
+    static final String LOG_TAG = "MYTAG (AdHelper)";
 
-    private static final String LOG_TAG = "MYTAG (AdHelper)";
-
-    private static final String PREFERENCES = "ads";
-    private static final String KEY_LAST_INTER = "last_time";
+    static boolean ADS_ENABLED = true;
     private static final String KEY_ADS_ENABLED = "ads_enabled";
 
-    private static final long MILLIS_BETWEEN_INTER = 60000; // 1 minute
+    static String AD_UNIT_INTER = null;
+    static String AD_UNIT_BANNER = null;
+    static String AD_UNIT_NATIVE = null;
+    static String AD_UNIT_APP_OPEN = null;
 
-    static String AD_UNIT_INTER = "ca-app-pub-3940256099942544/1033173712";
-    static String AD_UNIT_BANNER = "ca-app-pub-3940256099942544/6300978111";
-    static String AD_UNIT_NATIVE = "ca-app-pub-3940256099942544/2247696110";
-    static String AD_UNIT_APP_OPEN = "ca-app-pub-3940256099942544/3419835294";
-
-    private static InterstitialAd mInter;
     private static AppOpenAdManager mAppOpenAdManager;
 
-    private static AdRequest createAdRequest() {
+    static AdRequest createAdRequest() {
         return new AdRequest.Builder().build();
     }
 
@@ -74,14 +56,16 @@ public class AdsHelper {
         FirebaseApp.initializeApp(application);
         FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
         Map<String, Object> defaults = new HashMap<>();
-        defaults.put(KEY_ADS_ENABLED, false);
+        defaults.put(KEY_ADS_ENABLED, true);
         config.setDefaultsAsync(defaults).addOnCompleteListener(t ->
                 config.fetchAndActivate().addOnCompleteListener(task -> {
                     ADS_ENABLED = config.getBoolean(KEY_ADS_ENABLED);
                     if (ADS_ENABLED) {
                         Log.d(LOG_TAG, "Ads enabled!");
-                        MobileAds.initialize(application, initializationStatus
-                                -> mAppOpenAdManager = new AppOpenAdManager(application));
+                        MobileAds.initialize(application, initializationStatus -> {
+                            if (AD_UNIT_APP_OPEN != null)
+                                mAppOpenAdManager = new AppOpenAdManager(application);
+                        });
                     } else {
                         Log.d(LOG_TAG, "Ads disabled!");
                     }
@@ -90,69 +74,20 @@ public class AdsHelper {
     }
 
     public static void loadInter(@Nullable Context context) {
-
-        if (context == null || !ADS_ENABLED)
-            return;
-
-        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-
-        long lastTime = prefs.getLong(KEY_LAST_INTER, 0);
-        long now = System.currentTimeMillis();
-
-        if (now - lastTime < MILLIS_BETWEEN_INTER)
-            return;
-
-        MobileAds.initialize(context, initializationStatus ->
-                InterstitialAd.load(context, AD_UNIT_INTER, createAdRequest(),
-                new InterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                        mInter = interstitialAd;
-                        mInter.setFullScreenContentCallback(new FullScreenContentCallback() {
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
-                                mInter = null;
-                                Log.d(LOG_TAG, "Inter showing error: " + error);
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                mInter = null;
-                                SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = prefs.edit();
-                                editor.putLong(KEY_LAST_INTER, System.currentTimeMillis());
-                                editor.apply();
-                                loadInter(context);
-                            }
-                        });
-                        Log.d(LOG_TAG, "Inter loaded!");
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        mInter = null;
-                        Log.d(LOG_TAG, "Inter loading error: " + loadAdError);
-                    }
-                }));
-
+        InterstitialAdManager.loadInter(context);
     }
 
-    public static void showInter(Activity activity) {
-        if (mInter != null && activity != null) {
-            Log.d(LOG_TAG, "Showing interstitial...");
-            mInter.show(activity);
-        } else {
-            Log.d(LOG_TAG, "Failed to show interstitial!");
-        }
+    public static void showInter(@Nullable Activity activity, boolean autoLoading) {
+        InterstitialAdManager.showInter(activity, autoLoading);
     }
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
 
-        if (activity == null || !ADS_ENABLED)
+        if (activity == null || !ADS_ENABLED || AD_UNIT_BANNER == null)
             return;
 
         MobileAds.initialize(activity, initializationStatus -> {
+            Log.d(LOG_TAG, "Loading banner...");
             AdView adView = new AdView(activity);
             adView.setAdSize(getAdSize(activity));
             adView.setAdUnitId(AD_UNIT_BANNER);
@@ -161,6 +96,10 @@ public class AdsHelper {
                 public void onAdLoaded() {
                     container.removeAllViews();
                     container.addView(adView);
+                }
+                @Override
+                public void onAdFailedToLoad(@NonNull LoadAdError error) {
+                    Log.d(LOG_TAG, "Banner failed to load: " + error);
                 }
             });
             adView.loadAd(createAdRequest());
@@ -188,12 +127,17 @@ public class AdsHelper {
                                          int layoutResId,
                                          @NonNull ViewGroup container) {
 
-        if (context == null || !ADS_ENABLED)
+        if (context == null || !ADS_ENABLED || AD_UNIT_NATIVE == null)
             return;
 
         MobileAds.initialize(context, initializationStatus -> {
+
+            Log.d(LOG_TAG, "Loading NativeAd...");
             AdLoader adLoader = new AdLoader.Builder(context, AD_UNIT_NATIVE)
                     .forNativeAd(ad -> {
+
+                        Log.d(LOG_TAG, "NativeAd loaded, inflating!");
+
                         NativeAdView adView = (NativeAdView) inflater.inflate(layoutResId, container, false);
                         container.removeAllViews();
                         container.addView(adView);

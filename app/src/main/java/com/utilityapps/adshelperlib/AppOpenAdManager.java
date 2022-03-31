@@ -14,6 +14,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.appopen.AppOpenAd;
 
 public class AppOpenAdManager implements DefaultLifecycleObserver, Application.ActivityLifecycleCallbacks {
@@ -39,19 +40,26 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
         showAdIfAvailable();
     }
 
-    private void fetchAd() {
+    private void loadAd() {
 
         if (isAdAvailable())
             return;
+
+        Log.d(LOG_TAG, "Loading AppOpen...");
 
         AdRequest request = new AdRequest.Builder().build();
         AppOpenAd.load(mApplication, AdsHelper.AD_UNIT_APP_OPEN, request,
                 AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AppOpenAd appOpenAd) {
-                        Log.d(LOG_TAG, "AppOpen ad loaded");
+                        Log.d(LOG_TAG, "AppOpen loaded!");
                         mAd = appOpenAd;
                         mLoadTime = System.currentTimeMillis();
+                    }
+
+                    public void onAdFailedToLoad(@NonNull LoadAdError error) {
+                        Log.d(LOG_TAG, "AppOpen failed to load: " + error);
+                        mAd = null;
                     }
                 });
     }
@@ -68,13 +76,13 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
 
     private void showAdIfAvailable() {
         if (!isShowing && isAdAvailable()) {
-            Log.d(LOG_TAG, "Showing AppOpen ad...");
+            Log.d(LOG_TAG, "Showing AppOpen...");
             mAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                 @Override
                 public void onAdDismissedFullScreenContent() {
                     mAd = null;
                     isShowing = false;
-                    fetchAd();
+                    loadAd();
                 }
 
                 @Override
@@ -85,8 +93,7 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
             mAd.show(mActivity);
 
         } else {
-            Log.d(LOG_TAG, "Fetching AppOpen ad...");
-            fetchAd();
+            loadAd();
         }
     }
 
