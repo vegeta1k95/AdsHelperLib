@@ -92,12 +92,11 @@ public class InterstitialAdManager {
         }
 
         if (mShowing) {
-            Log.d(LOG_TAG, "Inter is shown rigth now!");
+            Log.d(LOG_TAG, "Inter is shown right now!");
             return;
         }
 
         mShowing = true;
-        mInter.show(activity);
         mInter.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
@@ -132,6 +131,7 @@ public class InterstitialAdManager {
 
             }
         });
+        mInter.show(activity);
     }
 
 }
