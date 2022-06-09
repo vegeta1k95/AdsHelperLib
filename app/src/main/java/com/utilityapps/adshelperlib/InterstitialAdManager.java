@@ -104,6 +104,9 @@ public class InterstitialAdManager {
                 mInter = null;
                 mShowing = false;
                 Log.d(LOG_TAG, "Inter dismissed!");
+
+                if (autoLoading)
+                    loadInter(activity);
             }
 
             @Override
