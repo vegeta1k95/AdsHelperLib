@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +23,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -143,18 +145,32 @@ public class AdsHelper {
                         container.addView(adView);
 
                         // Set the media view
-                        adView.setMediaView(adView.findViewById(R.id.img_warning_ad_img));
-                        adView.getMediaView().setImageScaleType(ImageView.ScaleType.FIT_XY);
-
-                        if (ad.getMediaContent() != null && !ad.getMediaContent().hasVideoContent()) {
-                            adView.getMediaView().setMediaContent(ad.getMediaContent());
+                        MediaView mediaView = adView.findViewById(R.id.img_warning_ad_img);
+                        if (mediaView != null) {
+                            adView.setMediaView(mediaView);
+                            adView.getMediaView().setImageScaleType(ImageView.ScaleType.FIT_XY);
+                            if (ad.getMediaContent() != null && !ad.getMediaContent().hasVideoContent()) {
+                                adView.getMediaView().setMediaContent(ad.getMediaContent());
+                            }
                         }
 
+                        TextView title = adView.findViewById(R.id.txt_warning_ad_title);
+                        TextView text = adView.findViewById(R.id.txt_warning_ad_text);
+                        Button btn = adView.findViewById(R.id.btn_warning_button);
+                        ImageView icon = adView.findViewById(R.id.img_warning_icon);
+
                         // Set other ad assets.
-                        adView.setHeadlineView(adView.findViewById(R.id.txt_warning_ad_title));
-                        adView.setBodyView(adView.findViewById(R.id.txt_warning_ad_text));
-                        adView.setCallToActionView(adView.findViewById(R.id.btn_warning_button));
-                        adView.setIconView(adView.findViewById(R.id.img_warning_icon));
+                        if (title != null)
+                            adView.setHeadlineView(title);
+
+                        if (text != null)
+                            adView.setBodyView(text);
+
+                        if (btn != null)
+                            adView.setCallToActionView(adView.findViewById(R.id.btn_warning_button));
+
+                        if (icon != null)
+                            adView.setIconView(adView.findViewById(R.id.img_warning_icon));
 
                         // The headline, body are guaranteed to be in every UnifiedNativeAd.
                         ((TextView) adView.getHeadlineView()).setText(ad.getHeadline());
