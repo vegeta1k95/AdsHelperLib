@@ -28,9 +28,7 @@ dependencies {
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
 
     implementation 'com.google.android.gms:play-services-ads:21.0.0'
-    implementation 'com.unity3d.ads:unity-ads:4.2.1'
-    implementation 'com.google.ads.mediation:unity:4.2.1.0'
-    implementation 'com.google.ads.mediation:applovin:11.4.2.0'
+    implementation 'com.google.ads.mediation:applovin:11.4.3.0'
     implementation 'com.google.ads.mediation:facebook:6.11.0.0'
 
     implementation 'androidx.lifecycle:lifecycle-process:2.4.1'
