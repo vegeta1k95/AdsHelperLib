@@ -2,7 +2,9 @@ package com.utilityapps.adshelperlib;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -58,9 +60,9 @@ public class InterstitialAdManager {
             return;
         }
 
+        mLoading = true;
         MobileAds.initialize(context, initializationStatus -> {
             Log.d(LOG_TAG, "Loading inter...");
-            mLoading = true;
             InterstitialAd.load(context, AdsHelper.AD_UNIT_INTER, AdsHelper.createAdRequest(),
                     new InterstitialAdLoadCallback() {
                         @Override
@@ -93,6 +95,11 @@ public class InterstitialAdManager {
 
         if (mShowing) {
             Log.d(LOG_TAG, "Inter is shown right now!");
+            return;
+        }
+
+        if (isLaunchedFromPush(activity)) {
+            Log.d(LOG_TAG, "Not showing when launched from push!");
             return;
         }
 
@@ -135,6 +142,15 @@ public class InterstitialAdManager {
             }
         });
         mInter.show(activity);
+    }
+
+    public static boolean isLaunchedFromPush(Activity activity) {
+        Intent intent = activity.getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras == null)
+            return false;
+        return extras.containsKey("billing_push_text")
+                || extras.containsKey("billing_push_offer");
     }
 
 }
