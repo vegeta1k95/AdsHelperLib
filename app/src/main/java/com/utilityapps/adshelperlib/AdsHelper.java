@@ -93,7 +93,7 @@ public class AdsHelper {
     }
 
     public static void showRewarded(@Nullable Activity activity, boolean autoLoading,
-                                    @Nullable OnUserEarnedRewardListener onReward) {
+                                    @Nullable RewardedAdManager.OnRewardEarned onReward) {
         RewardedAdManager.showRewarded(activity, autoLoading, onReward);
     }
 

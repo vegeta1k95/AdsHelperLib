@@ -22,6 +22,10 @@ public class RewardedAdManager {
 
     private static RewardedAd mRewarded;
 
+    public interface OnRewardEarned {
+        void onRewarded();
+    }
+
     public static boolean isRewardedAvailable() {
         return mRewarded != null;
     }
@@ -52,7 +56,7 @@ public class RewardedAdManager {
     }
 
     public static void showRewarded(@Nullable Activity activity, boolean autoLoading,
-                                    @Nullable OnUserEarnedRewardListener onReward) {
+                                    @Nullable OnRewardEarned onReward) {
 
         if (AD_UNIT_REWARDED == null || activity == null)
             return;
@@ -95,7 +99,7 @@ public class RewardedAdManager {
         mRewarded.show(activity, rewardItem -> {
             Log.d(LOG_TAG, "User obtained reward!");
             if (onReward != null)
-                onReward.onUserEarnedReward(rewardItem);
+                onReward.onRewarded();
         });
     }
 }
