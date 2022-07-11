@@ -14,13 +14,12 @@ import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
 public class RewardedAdManager {
 
-    private static RewardedAd mRewarded;
+    private static RewardedInterstitialAd mRewarded;
 
     public interface OnRewardEarned {
         void onRewarded();
@@ -38,8 +37,8 @@ public class RewardedAdManager {
         MobileAds.initialize(context, initializationStatus -> {
             Log.d(LOG_TAG, "Loading rewarded...");
 
-            RewardedAd.load(context, AdsHelper.AD_UNIT_REWARDED,
-                    AdsHelper.createAdRequest(), new RewardedAdLoadCallback() {
+            RewardedInterstitialAd.load(context, AdsHelper.AD_UNIT_REWARDED,
+                    AdsHelper.createAdRequest(), new RewardedInterstitialAdLoadCallback() {
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                             Log.d(LOG_TAG, "Rewarded loading error: " + loadAdError);
@@ -47,7 +46,7 @@ public class RewardedAdManager {
                         }
 
                         @Override
-                        public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+                        public void onAdLoaded(@NonNull RewardedInterstitialAd rewardedAd) {
                             mRewarded = rewardedAd;
                             Log.d(LOG_TAG, "Rewarded was loaded.");
                         }
