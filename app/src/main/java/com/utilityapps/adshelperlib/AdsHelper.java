@@ -23,8 +23,11 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAdView;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
@@ -42,6 +45,7 @@ public class AdsHelper {
     static String AD_UNIT_BANNER = null;
     static String AD_UNIT_NATIVE = null;
     static String AD_UNIT_APP_OPEN = null;
+    static String AD_UNIT_REWARDED = null;
 
     private static AppOpenAdManager mAppOpenAdManager;
 
@@ -53,6 +57,7 @@ public class AdsHelper {
     public static void setAdUnitBanner(String adUnit) { AD_UNIT_BANNER = adUnit; }
     public static void setAdUnitNative(String adUnit) { AD_UNIT_NATIVE = adUnit; }
     public static void setAdUnitAppOpen(String adUnit) { AD_UNIT_APP_OPEN = adUnit; }
+    public static void setAdUnitRewarded(String adUnit) { AD_UNIT_REWARDED = adUnit; }
 
     public static void initialize(Application application) {
         FirebaseApp.initializeApp(application);
@@ -81,6 +86,19 @@ public class AdsHelper {
 
     public static void showInter(@Nullable Activity activity, boolean autoLoading) {
         InterstitialAdManager.showInter(activity, autoLoading);
+    }
+
+    public static void loadRewarded(@Nullable Context context) {
+        RewardedAdManager.loadRewarded(context);
+    }
+
+    public static void showRewarded(@Nullable Activity activity, boolean autoLoading,
+                                    @Nullable OnUserEarnedRewardListener onReward) {
+        RewardedAdManager.showRewarded(activity, autoLoading, onReward);
+    }
+
+    public static boolean isRewardedAvailable() {
+        return RewardedAdManager.isRewardedAvailable();
     }
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
