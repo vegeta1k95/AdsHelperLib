@@ -17,7 +17,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
-public class RewardedAdManager {
+public class RewardedInterstitialAdManager {
 
     private static RewardedInterstitialAd mRewarded;
 

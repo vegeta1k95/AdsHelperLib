@@ -7,7 +7,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,11 +22,8 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
@@ -88,17 +84,17 @@ public class AdsHelper {
         InterstitialAdManager.showInter(activity, autoLoading);
     }
 
-    public static void loadRewarded(@Nullable Context context) {
-        RewardedAdManager.loadRewarded(context);
+    public static void loadRewardedInter(@Nullable Context context) {
+        RewardedInterstitialAdManager.loadRewarded(context);
     }
 
-    public static void showRewarded(@Nullable Activity activity, boolean autoLoading,
-                                    @Nullable RewardedAdManager.OnRewardEarned onReward) {
-        RewardedAdManager.showRewarded(activity, autoLoading, onReward);
+    public static void showRewardedInter(@Nullable Activity activity, boolean autoLoading,
+                                    @Nullable RewardedInterstitialAdManager.OnRewardEarned onReward) {
+        RewardedInterstitialAdManager.showRewarded(activity, autoLoading, onReward);
     }
 
     public static boolean isRewardedAvailable() {
-        return RewardedAdManager.isRewardedAvailable();
+        return RewardedInterstitialAdManager.isRewardedAvailable();
     }
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
