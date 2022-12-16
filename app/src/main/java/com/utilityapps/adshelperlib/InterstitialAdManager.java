@@ -21,7 +21,7 @@ import static com.utilityapps.adshelperlib.AdsHelper.LOG_TAG;
 
 public class InterstitialAdManager {
 
-    private static final long MILLIS_BETWEEN_INTER = 60000; // 1 minute
+    private static long MILLIS_BETWEEN_INTER = 60000; // 1 minute
 
     private static final String PREFERENCES = "ads";
     private static final String KEY_LAST_INTER = "last_time";
@@ -36,6 +36,10 @@ public class InterstitialAdManager {
         long lastTime = prefs.getLong(KEY_LAST_INTER, 0);
         long now = System.currentTimeMillis();
         return (now - lastTime > MILLIS_BETWEEN_INTER);
+    }
+
+    public static void setMillisBetweenInter(long millis) {
+        MILLIS_BETWEEN_INTER = millis;
     }
 
     public static void loadInter(@Nullable Context context) {
