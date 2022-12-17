@@ -76,6 +76,10 @@ public class AdsHelper {
 
     }
 
+    public static void setInterEnabled(boolean enabled) {
+        InterstitialAdManager.setEnabled(enabled);
+    }
+
     public static void setMillisBetweenInter(long millis) {
         InterstitialAdManager.setMillisBetweenInter(millis);
     }

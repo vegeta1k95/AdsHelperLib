@@ -26,6 +26,7 @@ public class InterstitialAdManager {
     private static final String PREFERENCES = "ads";
     private static final String KEY_LAST_INTER = "last_time";
 
+    private static boolean mIsEnabled = true;
     private static boolean mLoading = false;
     private static boolean mShowing = false;
 
@@ -38,6 +39,10 @@ public class InterstitialAdManager {
         return (now - lastTime > MILLIS_BETWEEN_INTER);
     }
 
+    public static void setEnabled(boolean enabled) {
+        mIsEnabled = enabled;
+    }
+
     public static void setMillisBetweenInter(long millis) {
         MILLIS_BETWEEN_INTER = millis;
     }
@@ -46,6 +51,7 @@ public class InterstitialAdManager {
 
         if (context == null
                 || !AdsHelper.ADS_ENABLED
+                || !mIsEnabled
                 || AdsHelper.AD_UNIT_INTER == null)
             return;
 
@@ -89,7 +95,7 @@ public class InterstitialAdManager {
 
     public static void showInter(Activity activity, boolean autoLoading) {
 
-        if (AdsHelper.AD_UNIT_INTER == null || activity == null)
+        if (AdsHelper.AD_UNIT_INTER == null || activity == null || !mIsEnabled)
             return;
 
         if (mInter == null) {
