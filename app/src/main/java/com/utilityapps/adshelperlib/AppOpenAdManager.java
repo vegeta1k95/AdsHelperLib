@@ -17,6 +17,9 @@ import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.appopen.AppOpenAd;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class AppOpenAdManager implements DefaultLifecycleObserver, Application.ActivityLifecycleCallbacks {
 
     private static final String LOG_TAG = "MYTAG (AppOpenAdManager)";
@@ -29,15 +32,15 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
 
     private long mLoadTime = 0;
 
+    private final static List<String> mExcludedPackages = Arrays.asList(
+            "com.google.android.gms.ads",
+            "com.applovin.adview",
+            "com.applovin.sdk");
+
     public AppOpenAdManager(Application application) {
         mApplication = application;
         mApplication.registerActivityLifecycleCallbacks(this);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-    }
-
-    @Override
-    public void onStart(@NonNull LifecycleOwner owner) {
-        showAdIfAvailable();
     }
 
     private void loadAd() {
@@ -95,6 +98,12 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
         } else {
             loadAd();
         }
+    }
+
+    @Override
+    public void onStart(@NonNull LifecycleOwner owner) {
+        if (mActivity != null && !mExcludedPackages.contains(mActivity.getPackageName()))
+            showAdIfAvailable();
     }
 
     @Override public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {}
