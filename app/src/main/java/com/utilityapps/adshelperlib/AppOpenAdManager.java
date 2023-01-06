@@ -32,11 +32,6 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
 
     private long mLoadTime = 0;
 
-    private final static List<String> mExcludedPackages = Arrays.asList(
-            "com.google.android.gms.ads",
-            "com.applovin.adview",
-            "com.applovin.sdk");
-
     public AppOpenAdManager(Application application) {
         mApplication = application;
         mApplication.registerActivityLifecycleCallbacks(this);
@@ -102,8 +97,7 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
 
     @Override
     public void onStart(@NonNull LifecycleOwner owner) {
-        if (mActivity != null && !mExcludedPackages.contains(mActivity.getPackageName()))
-            showAdIfAvailable();
+        showAdIfAvailable();
     }
 
     @Override public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {}
