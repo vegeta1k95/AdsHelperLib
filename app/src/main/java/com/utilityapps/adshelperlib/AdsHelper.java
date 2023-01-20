@@ -79,6 +79,10 @@ public class AdsHelper {
     }
 
     public static void initialize(Application application, String defaultNetwork) {
+        initialize(application, defaultNetwork, null);
+    }
+
+    public static void initialize(Application application, String defaultNetwork, @Nullable Runnable onComplete) {
 
         FirebaseApp.initializeApp(application);
         FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
@@ -93,6 +97,8 @@ public class AdsHelper {
                     if (ADS_ENABLED) {
                         Log.d(LOG_TAG, "Ads enabled!");
                         initNetwork(application, config.getString(KEY_ADS_NETWORK));
+                        if (onComplete != null)
+                            onComplete.run();
                     } else {
                         Log.d(LOG_TAG, "Ads disabled!");
                     }
@@ -109,28 +115,34 @@ public class AdsHelper {
     }
 
     public static void setInterEnabled(boolean enabled) {
-        network.setInterEnabled(enabled);
+        if (network != null)
+            network.setInterEnabled(enabled);
     }
 
     public static void setInterDelay(long millis) {
-        network.setInterDelay(millis);
+        if (network != null)
+            network.setInterDelay(millis);
     }
 
     public static void loadInter(@Nullable Context context) {
-        network.loadInter(context);
+        if (network != null)
+            network.loadInter(context);
     }
 
     public static void showInter(@Nullable Activity activity, boolean autoLoading) {
-       network.showInter(activity, autoLoading);
+        if (network != null)
+            network.showInter(activity, autoLoading);
     }
 
     public static void loadRewardedInter(@Nullable Context context) {
-        network.loadRewardedInter(context);
+        if (network != null)
+            network.loadRewardedInter(context);
     }
 
     public static void showRewardedInter(@Nullable Activity activity, boolean autoLoading,
                                     @Nullable INetwork.IOnReward onReward) {
-        network.showRewardedInter(activity, autoLoading, onReward);
+        if (network != null)
+            network.showRewardedInter(activity, autoLoading, onReward);
     }
 
     public static boolean isRewardedAvailable() {
@@ -138,7 +150,8 @@ public class AdsHelper {
     }
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
-        network.loadAndShowBanner(activity, container);
+        if (network != null)
+            network.loadAndShowBanner(activity, container);
     }
 
 
@@ -146,7 +159,8 @@ public class AdsHelper {
                                          @NonNull LayoutInflater inflater,
                                          int layoutResId,
                                          @NonNull ViewGroup container) {
-        network.loadAndShowNative(context, inflater, layoutResId, container);
+        if (network != null)
+            network.loadAndShowNative(context, inflater, layoutResId, container);
     }
 }
 
