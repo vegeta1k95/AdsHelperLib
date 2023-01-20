@@ -125,32 +125,54 @@ public class AdsHelper {
     }
 
     public static void loadInter(@Nullable Context context) {
-        if (network != null)
+
+        if (context == null || !ADS_ENABLED)
+            return;
+
+        if (network != null && network.isInitialized())
             network.loadInter(context);
     }
 
     public static void showInter(@Nullable Activity activity, boolean autoLoading) {
-        if (network != null)
+
+        if (activity == null || !ADS_ENABLED)
+            return;
+
+        if (network != null && network.isInitialized())
             network.showInter(activity, autoLoading);
     }
 
     public static void loadRewardedInter(@Nullable Context context) {
-        if (network != null)
+
+        if (context == null || !ADS_ENABLED)
+            return;
+
+        if (network != null && network.isInitialized())
             network.loadRewardedInter(context);
     }
 
     public static void showRewardedInter(@Nullable Activity activity, boolean autoLoading,
                                     @Nullable INetwork.IOnReward onReward) {
-        if (network != null)
+
+        if (activity == null || !ADS_ENABLED)
+            return;
+
+        if (network != null && network.isInitialized())
             network.showRewardedInter(activity, autoLoading, onReward);
     }
 
     public static boolean isRewardedAvailable() {
-        return network.isRewardedAvailable();
+        if (network != null && network.isInitialized())
+            return network.isRewardedAvailable();
+        return false;
     }
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
-        if (network != null)
+
+        if (activity == null || !ADS_ENABLED)
+            return;
+
+        if (network != null && network.isInitialized())
             network.loadAndShowBanner(activity, container);
     }
 
@@ -159,7 +181,11 @@ public class AdsHelper {
                                          @NonNull LayoutInflater inflater,
                                          int layoutResId,
                                          @NonNull ViewGroup container) {
-        if (network != null)
+
+        if (context == null || !ADS_ENABLED)
+            return;
+
+        if (network != null && network.isInitialized())
             network.loadAndShowNative(context, inflater, layoutResId, container);
     }
 }

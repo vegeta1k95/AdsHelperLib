@@ -47,12 +47,9 @@ public class InterstitialAdManager {
         MILLIS_BETWEEN_INTER = millis;
     }
 
-    public static void loadInter(@Nullable Context context) {
+    public static void loadInter(@NonNull Context context) {
 
-        if (context == null
-                || !AdsHelper.ADS_ENABLED
-                || !mIsEnabled
-                || Yandex.AD_UNIT_INTER == null)
+        if (!mIsEnabled || Yandex.AD_UNIT_INTER == null)
             return;
 
         if (!isTimeToLoad(context)) {
@@ -71,58 +68,56 @@ public class InterstitialAdManager {
         }
 
         mLoading = true;
-        MobileAds.initialize(context, () -> {
-            Log.d(LOG_TAG, "Loading inter...");
 
-            mInter = new InterstitialAd(context);
-            mInter.setAdUnitId(Yandex.AD_UNIT_INTER);
-            mInter.setInterstitialAdEventListener(new InterstitialAdEventListener() {
-                @Override
-                public void onAdLoaded() {
-                    mLoading = false;
-                    Log.d(LOG_TAG, "Inter loaded!");
-                }
+        Log.d(LOG_TAG, "Loading inter...");
 
-                @Override
-                public void onAdFailedToLoad(@NonNull AdRequestError adRequestError) {
-                    mLoading = false;
-                    mInter = null;
-                    Log.d(LOG_TAG, "Inter loading error: " + adRequestError.getDescription());
-                }
+        mInter = new InterstitialAd(context);
+        mInter.setAdUnitId(Yandex.AD_UNIT_INTER);
+        mInter.setInterstitialAdEventListener(new InterstitialAdEventListener() {
+            @Override
+            public void onAdLoaded() {
+                mLoading = false;
+                Log.d(LOG_TAG, "Inter loaded!");
+            }
 
-                @Override
-                public void onAdShown() {
-                    mInter = null;
-                    SharedPreferences prefs = context.getSharedPreferences(
-                            PREFERENCES, Context.MODE_PRIVATE);
-                    prefs.edit()
-                            .putLong(KEY_LAST_INTER, System.currentTimeMillis())
-                            .apply();
-                    Log.d(LOG_TAG, "Inter was shown!");
-                }
+            @Override
+            public void onAdFailedToLoad(@NonNull AdRequestError adRequestError) {
+                mLoading = false;
+                mInter = null;
+                Log.d(LOG_TAG, "Inter loading error: " + adRequestError.getDescription());
+            }
 
-                @Override
-                public void onAdDismissed() {
-                    mInter = null;
-                    mShowing = false;
-                    Log.d(LOG_TAG, "Inter dismissed!");
-                }
+            @Override
+            public void onAdShown() {
+                mInter = null;
+                SharedPreferences prefs = context.getSharedPreferences(
+                        PREFERENCES, Context.MODE_PRIVATE);
+                prefs.edit()
+                        .putLong(KEY_LAST_INTER, System.currentTimeMillis())
+                        .apply();
+                Log.d(LOG_TAG, "Inter was shown!");
+            }
 
-                @Override public void onAdClicked() {}
-                @Override public void onLeftApplication() {}
-                @Override public void onReturnedToApplication() {}
-                @Override public void onImpression(@Nullable ImpressionData impressionData) {}
-            });
+            @Override
+            public void onAdDismissed() {
+                mInter = null;
+                mShowing = false;
+                Log.d(LOG_TAG, "Inter dismissed!");
+            }
 
-            mInter.loadAd(Yandex.createAdRequest());
-
+            @Override public void onAdClicked() {}
+            @Override public void onLeftApplication() {}
+            @Override public void onReturnedToApplication() {}
+            @Override public void onImpression(@Nullable ImpressionData impressionData) {}
         });
+
+        mInter.loadAd(Yandex.createAdRequest());
 
     }
 
-    public static void showInter(Activity activity) {
+    public static void showInter(@NonNull Activity activity) {
 
-        if (Yandex.AD_UNIT_INTER == null || activity == null || !mIsEnabled)
+        if (Yandex.AD_UNIT_INTER == null || !mIsEnabled)
             return;
 
         if (mInter == null) {

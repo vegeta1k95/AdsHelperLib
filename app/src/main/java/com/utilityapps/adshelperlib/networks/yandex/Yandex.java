@@ -40,19 +40,28 @@ public class Yandex implements INetwork {
         return new AdRequest.Builder().build();
     }
 
+    private boolean mIsInitialized = false;
+
     @Override
     public void init(Application application) {
-        MobileAds.initialize(application, () ->
-                Log.d(LOG_TAG, "Yandex initialized."));
+        MobileAds.initialize(application, () -> {
+            Log.d(LOG_TAG, "Yandex initialized.");
+            mIsInitialized = true;
+        });
     }
 
     @Override
-    public void loadInter(@Nullable Context context) {
+    public boolean isInitialized() {
+        return mIsInitialized;
+    }
+
+    @Override
+    public void loadInter(@NonNull Context context) {
         InterstitialAdManager.loadInter(context);
     }
 
     @Override
-    public void showInter(@Nullable Activity activity, boolean autoLoading) {
+    public void showInter(@NonNull Activity activity, boolean autoLoading) {
         InterstitialAdManager.showInter(activity);
     }
 
@@ -67,13 +76,13 @@ public class Yandex implements INetwork {
     }
 
     @Override
-    public void loadRewardedInter(@Nullable Context context) {
+    public void loadRewardedInter(@NonNull Context context) {
         RewardedInterstitialAdManager.loadRewarded(context);
     }
 
     @Override
-    public void showRewardedInter(@Nullable Activity activity, boolean autoLoading, @Nullable IOnReward onReward) {
-        RewardedInterstitialAdManager.showRewarded(activity, onReward);
+    public void showRewardedInter(@NonNull Activity activity, boolean autoLoading, @Nullable IOnReward onReward) {
+        RewardedInterstitialAdManager.showRewarded(onReward);
     }
 
     @Override
@@ -82,37 +91,34 @@ public class Yandex implements INetwork {
     }
 
     @Override
-    public void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
-        if (activity == null || !AdsHelper.ADS_ENABLED || AD_UNIT_BANNER == null)
+    public void loadAndShowBanner(@NonNull Activity activity, @NonNull ViewGroup container) {
+
+        if (AD_UNIT_BANNER == null)
             return;
 
-        MobileAds.initialize(activity, () -> {
-            Log.d(LOG_TAG, "Loading banner...");
+        BannerAdView bannerAdView = new BannerAdView(activity);
+        bannerAdView.setAdUnitId(AD_UNIT_BANNER);
+        bannerAdView.setAdSize(getAdSize(activity));
 
-            BannerAdView bannerAdView = new BannerAdView(activity);
-            bannerAdView.setAdUnitId(AD_UNIT_BANNER);
-            bannerAdView.setAdSize(getAdSize(activity));
+        bannerAdView.setBannerAdEventListener(new BannerAdEventListener() {
+            @Override
+            public void onAdLoaded() {
+                container.removeAllViews();
+                container.addView(bannerAdView);
+            }
 
-            bannerAdView.setBannerAdEventListener(new BannerAdEventListener() {
-                @Override
-                public void onAdLoaded() {
-                    container.removeAllViews();
-                    container.addView(bannerAdView);
-                }
+            @Override
+            public void onAdFailedToLoad(@NonNull AdRequestError adRequestError) {
+                Log.d(LOG_TAG, "Banner failed to load: " + adRequestError);
+            }
 
-                @Override
-                public void onAdFailedToLoad(@NonNull AdRequestError adRequestError) {
-                    Log.d(LOG_TAG, "Banner failed to load: " + adRequestError);
-                }
-
-                @Override public void onAdClicked() {}
-                @Override public void onLeftApplication() {}
-                @Override public void onReturnedToApplication() {}
-                @Override public void onImpression(@Nullable ImpressionData impressionData) {}
-            });
-
-            bannerAdView.loadAd(createAdRequest());
+            @Override public void onAdClicked() {}
+            @Override public void onLeftApplication() {}
+            @Override public void onReturnedToApplication() {}
+            @Override public void onImpression(@Nullable ImpressionData impressionData) {}
         });
+
+        bannerAdView.loadAd(createAdRequest());
     }
 
     private static AdSize getAdSize(Activity activity) {
@@ -129,7 +135,8 @@ public class Yandex implements INetwork {
     }
 
     @Override
-    public void loadAndShowNative(@Nullable Context context, @NonNull LayoutInflater inflater, int layoutResId, @NonNull ViewGroup container) {
-
+    public void loadAndShowNative(@NonNull Context context, @NonNull LayoutInflater inflater,
+                                  int layoutResId, @NonNull ViewGroup container) {
+        // TODO: native ads
     }
 }

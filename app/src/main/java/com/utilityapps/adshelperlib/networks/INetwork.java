@@ -17,23 +17,25 @@ public interface INetwork {
 
     void init(Application application);
 
+    boolean isInitialized();
+
     // Inter
-    void loadInter(@Nullable Context context);
-    void showInter(@Nullable Activity activity, boolean autoLoading);
+    void loadInter(@NonNull Context context);
+    void showInter(@NonNull Activity activity, boolean autoLoading);
     void setInterEnabled(boolean enabled);
     void setInterDelay(long millis);
 
     // Rewarded Inter
-    void loadRewardedInter(@Nullable Context context);
-    void showRewardedInter(@Nullable Activity activity, boolean autoLoading,
-                      @Nullable IOnReward onReward);
     boolean isRewardedAvailable();
+    void loadRewardedInter(@NonNull Context context);
+    void showRewardedInter(@NonNull Activity activity, boolean autoLoading,
+                      @Nullable IOnReward onReward);
 
     // Banner
-    void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container);
+    void loadAndShowBanner(@NonNull Activity activity, @NonNull ViewGroup container);
 
     // Native
-    void loadAndShowNative(@Nullable Context context, @NonNull LayoutInflater inflater,
+    void loadAndShowNative(@NonNull Context context, @NonNull LayoutInflater inflater,
                            int layoutResId, @NonNull ViewGroup container);
 
 

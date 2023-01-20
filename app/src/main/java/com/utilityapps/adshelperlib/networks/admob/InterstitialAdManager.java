@@ -8,15 +8,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.utilityapps.adshelperlib.AdsHelper;
 
 import static com.utilityapps.adshelperlib.AdsHelper.LOG_TAG;
 
@@ -48,12 +45,9 @@ public class InterstitialAdManager {
         MILLIS_BETWEEN_INTER = millis;
     }
 
-    public static void loadInter(@Nullable Context context) {
+    public static void loadInter(@NonNull Context context) {
 
-        if (context == null
-                || !AdsHelper.ADS_ENABLED
-                || !mIsEnabled
-                || AdMob.AD_UNIT_INTER == null)
+        if (!mIsEnabled || AdMob.AD_UNIT_INTER == null)
             return;
 
         if (!isTimeToLoad(context)) {
@@ -72,31 +66,30 @@ public class InterstitialAdManager {
         }
 
         mLoading = true;
-        MobileAds.initialize(context, initializationStatus -> {
-            Log.d(LOG_TAG, "Loading inter...");
-            InterstitialAd.load(context, AdMob.AD_UNIT_INTER, AdMob.createAdRequest(),
-                    new InterstitialAdLoadCallback() {
-                        @Override
-                        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                            mLoading = false;
-                            mInter = interstitialAd;
-                            Log.d(LOG_TAG, "Inter loaded!");
-                        }
 
-                        @Override
-                        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                            mLoading = false;
-                            mInter = null;
-                            Log.d(LOG_TAG, "Inter loading error: " + loadAdError);
-                        }
-                    });
-        });
+        Log.d(LOG_TAG, "Loading inter...");
+        InterstitialAd.load(context, AdMob.AD_UNIT_INTER, AdMob.createAdRequest(),
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        mLoading = false;
+                        mInter = interstitialAd;
+                        Log.d(LOG_TAG, "Inter loaded!");
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        mLoading = false;
+                        mInter = null;
+                        Log.d(LOG_TAG, "Inter loading error: " + loadAdError);
+                    }
+                });
 
     }
 
-    public static void showInter(Activity activity, boolean autoLoading) {
+    public static void showInter(@NonNull Activity activity, boolean autoLoading) {
 
-        if (AdMob.AD_UNIT_INTER == null || activity == null || !mIsEnabled)
+        if (AdMob.AD_UNIT_INTER == null || !mIsEnabled)
             return;
 
         if (mInter == null) {
