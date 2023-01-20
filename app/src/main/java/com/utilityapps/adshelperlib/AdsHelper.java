@@ -38,6 +38,10 @@ import java.util.Map;
 
 public class AdsHelper {
 
+    public interface IOnInit {
+        void onInit();
+    }
+
     public static final String LOG_TAG = "MYTAG (AdHelper)";
 
     private static final String KEY_ADS_ENABLED = "ads_enabled";
@@ -82,7 +86,7 @@ public class AdsHelper {
         initialize(application, defaultNetwork, null);
     }
 
-    public static void initialize(Application application, String defaultNetwork, @Nullable Runnable onComplete) {
+    public static void initialize(Application application, String defaultNetwork, @Nullable IOnInit onComplete) {
 
         FirebaseApp.initializeApp(application);
         FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
@@ -96,9 +100,7 @@ public class AdsHelper {
                     ADS_ENABLED = config.getBoolean(KEY_ADS_ENABLED);
                     if (ADS_ENABLED) {
                         Log.d(LOG_TAG, "Ads enabled!");
-                        initNetwork(application, config.getString(KEY_ADS_NETWORK));
-                        if (onComplete != null)
-                            onComplete.run();
+                        initNetwork(application, config.getString(KEY_ADS_NETWORK), onComplete);
                     } else {
                         Log.d(LOG_TAG, "Ads disabled!");
                     }
@@ -106,12 +108,12 @@ public class AdsHelper {
 
     }
 
-    private static void initNetwork(Application application, String networkType) {
+    private static void initNetwork(Application application, String networkType, @Nullable IOnInit onComplete) {
         if (networkType.equals(NETWORK_YANDEX))
             network = new Yandex();
         else
             network = new AdMob();
-        network.init(application);
+        network.init(application, onComplete);
     }
 
     public static void setInterEnabled(boolean enabled) {

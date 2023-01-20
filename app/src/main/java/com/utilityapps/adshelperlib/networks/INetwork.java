@@ -9,13 +9,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.utilityapps.adshelperlib.AdsHelper;
+
 public interface INetwork {
 
     interface IOnReward {
         void onReward();
     }
 
-    void init(Application application);
+    void init(Application application, @Nullable AdsHelper.IOnInit onComplete);
 
     boolean isInitialized();
 

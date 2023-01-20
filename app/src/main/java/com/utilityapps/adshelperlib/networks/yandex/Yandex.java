@@ -5,6 +5,8 @@ import static com.utilityapps.adshelperlib.AdsHelper.LOG_TAG;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -43,10 +45,13 @@ public class Yandex implements INetwork {
     private boolean mIsInitialized = false;
 
     @Override
-    public void init(Application application) {
+    public void init(Application application, @Nullable AdsHelper.IOnInit onInit) {
         MobileAds.initialize(application, () -> {
             Log.d(LOG_TAG, "Yandex initialized.");
             mIsInitialized = true;
+
+            if (onInit != null)
+                new Handler(Looper.getMainLooper()).post(onInit::onInit);
         });
     }
 

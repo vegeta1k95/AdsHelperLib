@@ -53,12 +53,15 @@ public class AdMob implements INetwork {
     private boolean mIsInitialized = false;
 
     @Override
-    public void init(Application application) {
+    public void init(Application application, @Nullable AdsHelper.IOnInit onInit) {
         MobileAds.initialize(application, initializationStatus -> {
             Log.d(LOG_TAG, "AdMob initialized.");
             mIsInitialized = true;
             if (AD_UNIT_APP_OPEN != null)
                 mAppOpenAdManager = new AppOpenAdManager(application);
+
+            if (onInit != null)
+                onInit.onInit();
         });
     }
 
