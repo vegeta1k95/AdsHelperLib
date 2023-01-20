@@ -75,7 +75,7 @@ public class RewardedInterstitialAdManager {
         if (Yandex.AD_UNIT_REWARDED == null)
             return;
 
-        if (mRewarded == null) {
+        if (mRewarded == null || !mRewarded.isLoaded()) {
             Log.d(LOG_TAG, "No rewarded to show!");
             return;
         }

@@ -107,7 +107,6 @@ public class InterstitialAdManager {
             return;
         }
 
-        mShowing = true;
         mInter.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
@@ -133,6 +132,7 @@ public class InterstitialAdManager {
             @Override
             public void onAdShowedFullScreenContent() {
                 mInter = null;
+                mShowing = true;
                 SharedPreferences prefs = activity.getSharedPreferences(
                         PREFERENCES, Context.MODE_PRIVATE);
                 prefs.edit()

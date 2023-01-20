@@ -90,6 +90,7 @@ public class InterstitialAdManager {
             @Override
             public void onAdShown() {
                 mInter = null;
+                mShowing = true;
                 SharedPreferences prefs = context.getSharedPreferences(
                         PREFERENCES, Context.MODE_PRIVATE);
                 prefs.edit()
@@ -120,7 +121,7 @@ public class InterstitialAdManager {
         if (Yandex.AD_UNIT_INTER == null || !mIsEnabled)
             return;
 
-        if (mInter == null) {
+        if (mInter == null || !mInter.isLoaded()) {
             Log.d(LOG_TAG, "No inter to show!");
             return;
         }
@@ -135,7 +136,6 @@ public class InterstitialAdManager {
             return;
         }
 
-        mShowing = true;
         mInter.show();
     }
 
