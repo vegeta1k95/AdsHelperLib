@@ -1,6 +1,5 @@
-package com.utilityapps.adshelperlib;
+package com.utilityapps.adshelperlib.networks.admob;
 
-import static com.utilityapps.adshelperlib.AdsHelper.AD_UNIT_REWARDED;
 import static com.utilityapps.adshelperlib.AdsHelper.LOG_TAG;
 
 import android.app.Activity;
@@ -16,14 +15,12 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.utilityapps.adshelperlib.AdsHelper;
+import com.utilityapps.adshelperlib.networks.INetwork;
 
 public class RewardedInterstitialAdManager {
 
     private static RewardedInterstitialAd mRewarded;
-
-    public interface OnRewardEarned {
-        void onRewarded();
-    }
 
     public static boolean isRewardedAvailable() {
         return mRewarded != null;
@@ -31,14 +28,14 @@ public class RewardedInterstitialAdManager {
 
     public static void loadRewarded(@Nullable Context context) {
 
-        if (context == null || !AdsHelper.ADS_ENABLED || AD_UNIT_REWARDED == null)
+        if (context == null || !AdsHelper.ADS_ENABLED || AdMob.AD_UNIT_REWARDED == null)
             return;
 
         MobileAds.initialize(context, initializationStatus -> {
             Log.d(LOG_TAG, "Loading rewarded...");
 
-            RewardedInterstitialAd.load(context, AdsHelper.AD_UNIT_REWARDED,
-                    AdsHelper.createAdRequest(), new RewardedInterstitialAdLoadCallback() {
+            RewardedInterstitialAd.load(context, AdMob.AD_UNIT_REWARDED,
+                    AdMob.createAdRequest(), new RewardedInterstitialAdLoadCallback() {
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                             Log.d(LOG_TAG, "Rewarded loading error: " + loadAdError);
@@ -55,9 +52,9 @@ public class RewardedInterstitialAdManager {
     }
 
     public static void showRewarded(@Nullable Activity activity, boolean autoLoading,
-                                    @Nullable OnRewardEarned onReward) {
+                                    @Nullable INetwork.IOnReward onReward) {
 
-        if (AD_UNIT_REWARDED == null || activity == null)
+        if (AdMob.AD_UNIT_REWARDED == null || activity == null)
             return;
 
         if (mRewarded == null) {
@@ -98,7 +95,7 @@ public class RewardedInterstitialAdManager {
         mRewarded.show(activity, rewardItem -> {
             Log.d(LOG_TAG, "User obtained reward!");
             if (onReward != null)
-                onReward.onRewarded();
+                onReward.onReward();
         });
     }
 }

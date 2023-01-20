@@ -1,4 +1,4 @@
-package com.utilityapps.adshelperlib;
+package com.utilityapps.adshelperlib.networks.admob;
 
 
 import android.app.Activity;
@@ -16,6 +16,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.appopen.AppOpenAd;
+import com.utilityapps.adshelperlib.AdsHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +47,7 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
         Log.d(LOG_TAG, "Loading AppOpen...");
 
         AdRequest request = new AdRequest.Builder().build();
-        AppOpenAd.load(mApplication, AdsHelper.AD_UNIT_APP_OPEN, request,
+        AppOpenAd.load(mApplication, AdMob.AD_UNIT_APP_OPEN, request,
                 AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AppOpenAd appOpenAd) {

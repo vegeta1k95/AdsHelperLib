@@ -26,49 +26,73 @@ import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.utilityapps.adshelperlib.networks.INetwork;
+import com.utilityapps.adshelperlib.networks.admob.AdMob;
+import com.utilityapps.adshelperlib.networks.admob.AppOpenAdManager;
+import com.utilityapps.adshelperlib.networks.admob.InterstitialAdManager;
+import com.utilityapps.adshelperlib.networks.admob.RewardedInterstitialAdManager;
+import com.utilityapps.adshelperlib.networks.yandex.Yandex;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class AdsHelper {
 
-    static final String LOG_TAG = "MYTAG (AdHelper)";
+    public static final String LOG_TAG = "MYTAG (AdHelper)";
 
-    static boolean ADS_ENABLED = true;
     private static final String KEY_ADS_ENABLED = "ads_enabled";
+    private static final String KEY_ADS_NETWORK = "ads_network";
+    public static boolean ADS_ENABLED = true;
 
-    static String AD_UNIT_INTER = null;
-    static String AD_UNIT_BANNER = null;
-    static String AD_UNIT_NATIVE = null;
-    static String AD_UNIT_APP_OPEN = null;
-    static String AD_UNIT_REWARDED = null;
+    public static final String NETWORK_ADMOB = "ADMOB";
+    public static final String NETWORK_YANDEX = "YANDEX";
 
-    private static AppOpenAdManager mAppOpenAdManager;
+    private static INetwork network;
 
-    static AdRequest createAdRequest() {
-        return new AdRequest.Builder().build();
+    public static void setAdUnitInter(String network, String adUnit) {
+        if (network.equals(NETWORK_ADMOB))
+            AdMob.setAdUnitInter(adUnit);
+        else if (network.equals(NETWORK_YANDEX))
+            Yandex.setAdUnitInter(adUnit);
+    }
+    public static void setAdUnitBanner(String network, String adUnit) {
+        if (network.equals(NETWORK_ADMOB))
+            AdMob.setAdUnitBanner(adUnit);
+        else if (network.equals(NETWORK_YANDEX))
+            Yandex.setAdUnitBanner(adUnit);
+    }
+    public static void setAdUnitNative(String network, String adUnit) {
+        if (network.equals(NETWORK_ADMOB))
+            AdMob.setAdUnitNative(adUnit);
+        else if (network.equals(NETWORK_YANDEX))
+            Yandex.setAdUnitNative(adUnit);
+    }
+    public static void setAdUnitAppOpen(String network, String adUnit) {
+        if (network.equals(NETWORK_ADMOB))
+            AdMob.setAdUnitAppOpen(adUnit);
+    }
+    public static void setAdUnitRewardedInter(String network, String adUnit) {
+        if (network.equals(NETWORK_ADMOB))
+            AdMob.setAdUnitRewardedInter(adUnit);
+        else if (network.equals(NETWORK_YANDEX))
+            Yandex.setAdUnitRewardedInter(adUnit);
     }
 
-    public static void setAdUnitInter(String adUnit) { AD_UNIT_INTER = adUnit; }
-    public static void setAdUnitBanner(String adUnit) { AD_UNIT_BANNER = adUnit; }
-    public static void setAdUnitNative(String adUnit) { AD_UNIT_NATIVE = adUnit; }
-    public static void setAdUnitAppOpen(String adUnit) { AD_UNIT_APP_OPEN = adUnit; }
-    public static void setAdUnitRewarded(String adUnit) { AD_UNIT_REWARDED = adUnit; }
+    public static void initialize(Application application, String defaultNetwork) {
 
-    public static void initialize(Application application) {
         FirebaseApp.initializeApp(application);
         FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+
         Map<String, Object> defaults = new HashMap<>();
         defaults.put(KEY_ADS_ENABLED, true);
+        defaults.put(KEY_ADS_NETWORK, defaultNetwork);
+
         config.setDefaultsAsync(defaults).addOnCompleteListener(t ->
                 config.fetchAndActivate().addOnCompleteListener(task -> {
                     ADS_ENABLED = config.getBoolean(KEY_ADS_ENABLED);
                     if (ADS_ENABLED) {
                         Log.d(LOG_TAG, "Ads enabled!");
-                        MobileAds.initialize(application, initializationStatus -> {
-                            if (AD_UNIT_APP_OPEN != null)
-                                mAppOpenAdManager = new AppOpenAdManager(application);
-                        });
+                        initNetwork(application, config.getString(KEY_ADS_NETWORK));
                     } else {
                         Log.d(LOG_TAG, "Ads disabled!");
                     }
@@ -76,73 +100,45 @@ public class AdsHelper {
 
     }
 
-    public static void setInterEnabled(boolean enabled) {
-        InterstitialAdManager.setEnabled(enabled);
+    private static void initNetwork(Application application, String networkType) {
+        if (networkType.equals(NETWORK_YANDEX))
+            network = new Yandex();
+        else
+            network = new AdMob();
+        network.init(application);
     }
 
-    public static void setMillisBetweenInter(long millis) {
-        InterstitialAdManager.setMillisBetweenInter(millis);
+    public static void setInterEnabled(boolean enabled) {
+        network.setInterEnabled(enabled);
+    }
+
+    public static void setInterDelay(long millis) {
+        network.setInterDelay(millis);
     }
 
     public static void loadInter(@Nullable Context context) {
-        InterstitialAdManager.loadInter(context);
+        network.loadInter(context);
     }
 
     public static void showInter(@Nullable Activity activity, boolean autoLoading) {
-        InterstitialAdManager.showInter(activity, autoLoading);
+       network.showInter(activity, autoLoading);
     }
 
     public static void loadRewardedInter(@Nullable Context context) {
-        RewardedInterstitialAdManager.loadRewarded(context);
+        network.loadRewardedInter(context);
     }
 
     public static void showRewardedInter(@Nullable Activity activity, boolean autoLoading,
-                                    @Nullable RewardedInterstitialAdManager.OnRewardEarned onReward) {
-        RewardedInterstitialAdManager.showRewarded(activity, autoLoading, onReward);
+                                    @Nullable INetwork.IOnReward onReward) {
+        network.showRewardedInter(activity, autoLoading, onReward);
     }
 
     public static boolean isRewardedAvailable() {
-        return RewardedInterstitialAdManager.isRewardedAvailable();
+        return network.isRewardedAvailable();
     }
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
-
-        if (activity == null || !ADS_ENABLED || AD_UNIT_BANNER == null)
-            return;
-
-        MobileAds.initialize(activity, initializationStatus -> {
-            Log.d(LOG_TAG, "Loading banner...");
-            AdView adView = new AdView(activity);
-            adView.setAdSize(getAdSize(activity));
-            adView.setAdUnitId(AD_UNIT_BANNER);
-            adView.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    container.removeAllViews();
-                    container.addView(adView);
-                }
-                @Override
-                public void onAdFailedToLoad(@NonNull LoadAdError error) {
-                    Log.d(LOG_TAG, "Banner failed to load: " + error);
-                }
-            });
-            adView.loadAd(createAdRequest());
-        });
-    }
-
-    private static AdSize getAdSize(Activity activity) {
-        // Step 2 - Determine the screen width (less decorations) to use for the ad width.
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        float widthPixels = outMetrics.widthPixels;
-        float density = outMetrics.density;
-
-        int adWidth = (int) (widthPixels / density);
-
-        // Step 3 - Get adaptive ad size and return for setting on the ad view.
-        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth);
+        network.loadAndShowBanner(activity, container);
     }
 
 
@@ -150,66 +146,7 @@ public class AdsHelper {
                                          @NonNull LayoutInflater inflater,
                                          int layoutResId,
                                          @NonNull ViewGroup container) {
-
-        if (context == null || !ADS_ENABLED || AD_UNIT_NATIVE == null)
-            return;
-
-        MobileAds.initialize(context, initializationStatus -> {
-
-            Log.d(LOG_TAG, "Loading NativeAd...");
-            AdLoader adLoader = new AdLoader.Builder(context, AD_UNIT_NATIVE)
-                    .forNativeAd(ad -> {
-
-                        Log.d(LOG_TAG, "NativeAd loaded, inflating!");
-
-                        NativeAdView adView = (NativeAdView) inflater.inflate(layoutResId, container, false);
-                        container.removeAllViews();
-                        container.addView(adView);
-
-                        // Set the media view
-                        MediaView mediaView = adView.findViewById(R.id.img_warning_ad_img);
-                        if (mediaView != null) {
-                            adView.setMediaView(mediaView);
-                            adView.getMediaView().setImageScaleType(ImageView.ScaleType.FIT_XY);
-                            if (ad.getMediaContent() != null && !ad.getMediaContent().hasVideoContent()) {
-                                adView.getMediaView().setMediaContent(ad.getMediaContent());
-                            }
-                        }
-
-                        TextView title = adView.findViewById(R.id.txt_warning_ad_title);
-                        TextView text = adView.findViewById(R.id.txt_warning_ad_text);
-                        Button btn = adView.findViewById(R.id.btn_warning_button);
-                        ImageView icon = adView.findViewById(R.id.img_warning_icon);
-
-                        // Set other ad assets.
-                        if (title != null)
-                            adView.setHeadlineView(title);
-
-                        if (text != null)
-                            adView.setBodyView(text);
-
-                        if (btn != null)
-                            adView.setCallToActionView(adView.findViewById(R.id.btn_warning_button));
-
-                        if (icon != null)
-                            adView.setIconView(adView.findViewById(R.id.img_warning_icon));
-
-                        // The headline, body are guaranteed to be in every UnifiedNativeAd.
-                        ((TextView) adView.getHeadlineView()).setText(ad.getHeadline());
-                        ((TextView) adView.getBodyView()).setText(ad.getBody());
-
-                        if (ad.getIcon() != null) {
-                            ((ImageView) adView.getIconView()).setImageDrawable(ad.getIcon().getDrawable());
-                        }
-
-                        if (ad.getCallToAction() != null) {
-                            ((Button) adView.getCallToActionView()).setText(ad.getCallToAction());
-                        }
-                        adView.setNativeAd(ad);
-
-                    }).build();
-            adLoader.loadAd(createAdRequest());
-        });
+        network.loadAndShowNative(context, inflater, layoutResId, container);
     }
 }
 

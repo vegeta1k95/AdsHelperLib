@@ -1,4 +1,4 @@
-package com.utilityapps.adshelperlib;
+package com.utilityapps.adshelperlib.networks.admob;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +16,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.utilityapps.adshelperlib.AdsHelper;
 
 import static com.utilityapps.adshelperlib.AdsHelper.LOG_TAG;
 
@@ -52,7 +53,7 @@ public class InterstitialAdManager {
         if (context == null
                 || !AdsHelper.ADS_ENABLED
                 || !mIsEnabled
-                || AdsHelper.AD_UNIT_INTER == null)
+                || AdMob.AD_UNIT_INTER == null)
             return;
 
         if (!isTimeToLoad(context)) {
@@ -73,7 +74,7 @@ public class InterstitialAdManager {
         mLoading = true;
         MobileAds.initialize(context, initializationStatus -> {
             Log.d(LOG_TAG, "Loading inter...");
-            InterstitialAd.load(context, AdsHelper.AD_UNIT_INTER, AdsHelper.createAdRequest(),
+            InterstitialAd.load(context, AdMob.AD_UNIT_INTER, AdMob.createAdRequest(),
                     new InterstitialAdLoadCallback() {
                         @Override
                         public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
@@ -95,7 +96,7 @@ public class InterstitialAdManager {
 
     public static void showInter(Activity activity, boolean autoLoading) {
 
-        if (AdsHelper.AD_UNIT_INTER == null || activity == null || !mIsEnabled)
+        if (AdMob.AD_UNIT_INTER == null || activity == null || !mIsEnabled)
             return;
 
         if (mInter == null) {
