@@ -1,8 +1,12 @@
 package com.utilityapps.adshelperlib;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -34,7 +38,9 @@ import com.utilityapps.adshelperlib.networks.admob.InterstitialAdManager;
 import com.utilityapps.adshelperlib.networks.admob.RewardedInterstitialAdManager;
 import com.utilityapps.adshelperlib.networks.yandex.Yandex;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AdsHelper {
@@ -96,7 +102,49 @@ public class AdsHelper {
         config.setDefaultsAsync(mergeDefaults(config, defaults)).addOnCompleteListener(t ->
                 config.fetchAndActivate().addOnCompleteListener(task ->
                         initNetwork(application, config.getString(KEY_ADS_NETWORK), onComplete)));
+    }
 
+    public static boolean isMainProcess(Application application) {
+
+        if (Build.VERSION.SDK_INT >= 28) {
+            return TextUtils.equals(Application.getProcessName(), application.getPackageName());
+        }
+
+        // Try using ActivityThread to determine the current process name.
+        try {
+            @SuppressLint("PrivateApi")
+            Class<?> activityThread = Class.forName(
+                    "android.app.ActivityThread",
+                    false,
+                    Application.class.getClassLoader());
+            final Object packageName;
+            @SuppressLint("DiscouragedPrivateApi")
+            Method currentProcessName = activityThread.getDeclaredMethod("currentProcessName");
+            currentProcessName.setAccessible(true);
+            packageName = currentProcessName.invoke(null);
+
+            if (packageName instanceof String) {
+                return TextUtils.equals((String) packageName, application.getPackageName());
+            }
+
+        } catch (Throwable exception) { /* ... */ }
+
+        // Fallback to the most expensive way
+        int pid = android.os.Process.myPid();
+        ActivityManager am = (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (am != null) {
+            List<ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
+            if (processes != null && !processes.isEmpty()) {
+                for (ActivityManager.RunningAppProcessInfo process : processes) {
+                    if (process.pid == pid) {
+                        return TextUtils.equals(process.processName, application.getPackageName());
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     private static Map<String, Object> mergeDefaults(FirebaseRemoteConfig config, Map<String, Object> newDefaults) {
