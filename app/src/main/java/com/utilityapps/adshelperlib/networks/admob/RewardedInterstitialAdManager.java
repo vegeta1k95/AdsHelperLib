@@ -28,7 +28,7 @@ public class RewardedInterstitialAdManager {
 
     public static void loadRewarded(@Nullable Context context) {
 
-        if (context == null || !AdsHelper.ADS_ENABLED || AdMob.AD_UNIT_REWARDED == null)
+        if (context == null || AdMob.AD_UNIT_REWARDED == null)
             return;
 
         MobileAds.initialize(context, initializationStatus -> {

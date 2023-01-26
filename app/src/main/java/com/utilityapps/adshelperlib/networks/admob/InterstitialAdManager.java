@@ -87,7 +87,7 @@ public class InterstitialAdManager {
 
     }
 
-    public static void showInter(@NonNull Activity activity, boolean autoLoading) {
+    public static void showInter(@NonNull Activity activity) {
 
         if (AdMob.AD_UNIT_INTER == null || !mIsEnabled)
             return;
@@ -114,9 +114,6 @@ public class InterstitialAdManager {
                 mInter = null;
                 mShowing = false;
                 Log.d(LOG_TAG, "Inter dismissed!");
-
-                if (autoLoading)
-                    loadInter(activity);
             }
 
             @Override
@@ -124,9 +121,6 @@ public class InterstitialAdManager {
                 mInter = null;
                 mShowing = false;
                 Log.d(LOG_TAG, "Inter showing error: " + error);
-
-                if (autoLoading)
-                    loadInter(activity);
             }
 
             @Override
@@ -139,9 +133,6 @@ public class InterstitialAdManager {
                         .putLong(KEY_LAST_INTER, System.currentTimeMillis())
                         .apply();
                 Log.d(LOG_TAG, "Inter was shown!");
-
-                if (autoLoading)
-                    loadInter(activity);
 
             }
         });

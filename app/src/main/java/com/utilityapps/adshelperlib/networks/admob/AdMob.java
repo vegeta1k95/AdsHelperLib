@@ -76,8 +76,8 @@ public class AdMob implements INetwork {
     }
 
     @Override
-    public void showInter(@NonNull Activity activity, boolean autoLoading) {
-        InterstitialAdManager.showInter(activity, autoLoading);
+    public void showInter(@NonNull Activity activity) {
+        InterstitialAdManager.showInter(activity);
     }
 
     @Override

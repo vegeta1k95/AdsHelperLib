@@ -23,7 +23,7 @@ public interface INetwork {
 
     // Inter
     void loadInter(@NonNull Context context);
-    void showInter(@NonNull Activity activity, boolean autoLoading);
+    void showInter(@NonNull Activity activity);
     void setInterEnabled(boolean enabled);
     void setInterDelay(long millis);
 

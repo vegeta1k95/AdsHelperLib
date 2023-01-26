@@ -26,6 +26,7 @@ import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import com.utilityapps.adshelperlib.networks.INetwork;
 import com.utilityapps.adshelperlib.networks.admob.AdMob;
 import com.utilityapps.adshelperlib.networks.admob.AppOpenAdManager;
@@ -44,9 +45,7 @@ public class AdsHelper {
 
     public static final String LOG_TAG = "MYTAG (AdHelper)";
 
-    private static final String KEY_ADS_ENABLED = "ads_enabled";
     private static final String KEY_ADS_NETWORK = "ads_network";
-    public static boolean ADS_ENABLED = true;
 
     public static final String NETWORK_ADMOB = "ADMOB";
     public static final String NETWORK_YANDEX = "YANDEX";
@@ -92,20 +91,23 @@ public class AdsHelper {
         FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
 
         Map<String, Object> defaults = new HashMap<>();
-        defaults.put(KEY_ADS_ENABLED, true);
         defaults.put(KEY_ADS_NETWORK, defaultNetwork);
 
-        config.setDefaultsAsync(defaults).addOnCompleteListener(t ->
-                config.fetchAndActivate().addOnCompleteListener(task -> {
-                    ADS_ENABLED = config.getBoolean(KEY_ADS_ENABLED);
-                    if (ADS_ENABLED) {
-                        Log.d(LOG_TAG, "Ads enabled!");
-                        initNetwork(application, config.getString(KEY_ADS_NETWORK), onComplete);
-                    } else {
-                        Log.d(LOG_TAG, "Ads disabled!");
-                    }
-                }));
+        config.setDefaultsAsync(mergeDefaults(config, defaults)).addOnCompleteListener(t ->
+                config.fetchAndActivate().addOnCompleteListener(task ->
+                        initNetwork(application, config.getString(KEY_ADS_NETWORK), onComplete)));
 
+    }
+
+    private static Map<String, Object> mergeDefaults(FirebaseRemoteConfig config, Map<String, Object> newDefaults) {
+        Map<String, FirebaseRemoteConfigValue> oldValues = config.getAll();
+        Map<String, Object> oldDefaults = new HashMap<>();
+        for (Map.Entry<String, FirebaseRemoteConfigValue> entry : oldValues.entrySet()) {
+            if (entry.getValue().getSource() == FirebaseRemoteConfig.VALUE_SOURCE_DEFAULT)
+                oldDefaults.put(entry.getKey(), entry.getValue().toString());
+        }
+        oldDefaults.putAll(newDefaults);
+        return oldDefaults;
     }
 
     private static void initNetwork(Application application, String networkType, @Nullable IOnInit onComplete) {
@@ -128,25 +130,25 @@ public class AdsHelper {
 
     public static void loadInter(@Nullable Context context) {
 
-        if (context == null || !ADS_ENABLED)
+        if (context == null)
             return;
 
         if (network != null && network.isInitialized())
             network.loadInter(context);
     }
 
-    public static void showInter(@Nullable Activity activity, boolean autoLoading) {
+    public static void showInter(@Nullable Activity activity) {
 
-        if (activity == null || !ADS_ENABLED)
+        if (activity == null)
             return;
 
         if (network != null && network.isInitialized())
-            network.showInter(activity, autoLoading);
+            network.showInter(activity);
     }
 
     public static void loadRewardedInter(@Nullable Context context) {
 
-        if (context == null || !ADS_ENABLED)
+        if (context == null)
             return;
 
         if (network != null && network.isInitialized())
@@ -156,7 +158,7 @@ public class AdsHelper {
     public static void showRewardedInter(@Nullable Activity activity, boolean autoLoading,
                                     @Nullable INetwork.IOnReward onReward) {
 
-        if (activity == null || !ADS_ENABLED)
+        if (activity == null)
             return;
 
         if (network != null && network.isInitialized())
@@ -171,7 +173,7 @@ public class AdsHelper {
 
     public static void loadAndShowBanner(@Nullable Activity activity, @NonNull ViewGroup container) {
 
-        if (activity == null || !ADS_ENABLED)
+        if (activity == null)
             return;
 
         if (network != null && network.isInitialized())
@@ -184,7 +186,7 @@ public class AdsHelper {
                                          int layoutResId,
                                          @NonNull ViewGroup container) {
 
-        if (context == null || !ADS_ENABLED)
+        if (context == null)
             return;
 
         if (network != null && network.isInitialized())
