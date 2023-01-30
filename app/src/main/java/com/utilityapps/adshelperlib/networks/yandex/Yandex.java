@@ -107,6 +107,9 @@ public class Yandex implements INetwork {
             @Override
             public void onAdLoaded() {
                 container.removeAllViews();
+                ViewGroup.LayoutParams params = container.getLayoutParams();
+                params.height = 40;
+                container.setLayoutParams(params);
                 container.addView(bannerAdView);
             }
 
