@@ -40,6 +40,7 @@ dependencies {
     implementation 'com.yandex.ads.mediation:mobileads-mytarget:5.16.2.0'
     implementation 'com.yandex.ads.mediation:mobileads-mintegral:16.3.11.0'
     implementation 'com.yandex.ads.mediation:mobileads-vungle:6.12.0.1'
+    implementation 'com.yandex.ads.mediation:mobileads-pangle:4.8.1.0.0'
     //implementation 'com.yandex.ads.mediation:mobileads-unityads::4.4.1.0'
 
     implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
