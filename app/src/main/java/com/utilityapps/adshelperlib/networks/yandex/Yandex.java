@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.utilityapps.adshelperlib.AdsHelper;
+import com.utilityapps.adshelperlib.R;
 import com.utilityapps.adshelperlib.networks.INetwork;
 import com.yandex.mobile.ads.banner.AdSize;
 import com.yandex.mobile.ads.banner.BannerAdEventListener;
@@ -108,7 +109,7 @@ public class Yandex implements INetwork {
             public void onAdLoaded() {
                 container.removeAllViews();
                 ViewGroup.LayoutParams params = container.getLayoutParams();
-                params.height = 40;
+                params.height = activity.getResources().getDimensionPixelSize(R.dimen._35sdp);
                 container.setLayoutParams(params);
                 container.addView(bannerAdView);
             }
