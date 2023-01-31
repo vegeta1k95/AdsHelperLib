@@ -26,6 +26,11 @@ import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.AdRequestError;
 import com.yandex.mobile.ads.common.ImpressionData;
 import com.yandex.mobile.ads.common.MobileAds;
+import com.yandex.mobile.ads.nativeads.NativeAd;
+import com.yandex.mobile.ads.nativeads.NativeAdLoadListener;
+import com.yandex.mobile.ads.nativeads.NativeAdLoader;
+import com.yandex.mobile.ads.nativeads.NativeAdRequestConfiguration;
+import com.yandex.mobile.ads.nativeads.template.NativeBannerView;
 
 public class Yandex implements INetwork {
 
@@ -141,9 +146,34 @@ public class Yandex implements INetwork {
         return AdSize.stickySize(adWidth);
     }
 
+    private NativeAdLoader mNativeAdLoader;
+    private NativeAd mNativeAd;
+
     @Override
     public void loadAndShowNative(@NonNull Context context, @NonNull LayoutInflater inflater,
                                   int layoutResId, @NonNull ViewGroup container) {
-        // TODO: native ads
+
+        mNativeAdLoader = new NativeAdLoader(context);
+        mNativeAdLoader.setNativeAdLoadListener(new NativeAdLoadListener() {
+            @Override
+            public void onAdLoaded(@NonNull final NativeAd nativeAd) {
+                Log.d(LOG_TAG, "Native ad loaded, inflating!");
+                mNativeAd = nativeAd;
+                final NativeBannerView nativeBannerView = new NativeBannerView(context);
+                nativeBannerView.setAd(mNativeAd);
+                container.removeAllViews();
+                container.addView(nativeBannerView);
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull final AdRequestError error) {
+                Log.d(LOG_TAG, "Native ad failed to load: " + error.getDescription());
+            }
+        });
+
+        final NativeAdRequestConfiguration nativeAdRequestConfiguration =
+                new NativeAdRequestConfiguration.Builder(AD_UNIT_NATIVE).build();
+        mNativeAdLoader.loadAd(nativeAdRequestConfiguration);
+
     }
 }
