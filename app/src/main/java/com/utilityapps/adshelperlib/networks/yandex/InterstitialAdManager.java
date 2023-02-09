@@ -12,10 +12,8 @@ import androidx.annotation.Nullable;
 
 import static com.utilityapps.adshelperlib.AdsHelper.LOG_TAG;
 
-import com.utilityapps.adshelperlib.AdsHelper;
 import com.yandex.mobile.ads.common.AdRequestError;
 import com.yandex.mobile.ads.common.ImpressionData;
-import com.yandex.mobile.ads.common.MobileAds;
 import com.yandex.mobile.ads.interstitial.InterstitialAd;
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener;
 
@@ -32,7 +30,7 @@ public class InterstitialAdManager {
 
     private static InterstitialAd mInter;
 
-    private static boolean isTimeToLoad(Context context) {
+    private static boolean isTimeToShow(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         long lastTime = prefs.getLong(KEY_LAST_INTER, 0);
         long now = System.currentTimeMillis();
@@ -51,11 +49,6 @@ public class InterstitialAdManager {
 
         if (!mIsEnabled || Yandex.AD_UNIT_INTER == null)
             return;
-
-        if (!isTimeToLoad(context)) {
-            Log.d(LOG_TAG, "Not time yet to load inter!");
-            return;
-        }
 
         if (mLoading) {
             Log.d(LOG_TAG, "Loading is already in progress!");
@@ -97,6 +90,7 @@ public class InterstitialAdManager {
                         .putLong(KEY_LAST_INTER, System.currentTimeMillis())
                         .apply();
                 Log.d(LOG_TAG, "Inter was shown!");
+                loadInter(context);
             }
 
             @Override
@@ -123,6 +117,11 @@ public class InterstitialAdManager {
 
         if (mInter == null || !mInter.isLoaded()) {
             Log.d(LOG_TAG, "No inter to show!");
+            return;
+        }
+
+        if (!isTimeToShow(activity)) {
+            Log.d(LOG_TAG, "Not time yet to show inter!");
             return;
         }
 

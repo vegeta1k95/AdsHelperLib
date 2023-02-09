@@ -30,7 +30,7 @@ public class InterstitialAdManager {
 
     private static InterstitialAd mInter;
 
-    private static boolean isTimeToLoad(Context context) {
+    private static boolean isTimeToShow(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         long lastTime = prefs.getLong(KEY_LAST_INTER, 0);
         long now = System.currentTimeMillis();
@@ -49,11 +49,6 @@ public class InterstitialAdManager {
 
         if (!mIsEnabled || AdMob.AD_UNIT_INTER == null)
             return;
-
-        if (!isTimeToLoad(context)) {
-            Log.d(LOG_TAG, "Not time yet to load inter!");
-            return;
-        }
 
         if (mLoading) {
             Log.d(LOG_TAG, "Loading is already in progress!");
@@ -97,6 +92,11 @@ public class InterstitialAdManager {
             return;
         }
 
+        if (!isTimeToShow(activity)) {
+            Log.d(LOG_TAG, "Not time yet to show inter!");
+            return;
+        }
+
         if (mShowing) {
             Log.d(LOG_TAG, "Inter is shown right now!");
             return;
@@ -120,6 +120,7 @@ public class InterstitialAdManager {
             public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
                 mInter = null;
                 mShowing = false;
+                loadInter(activity);
                 Log.d(LOG_TAG, "Inter showing error: " + error);
             }
 
@@ -132,6 +133,7 @@ public class InterstitialAdManager {
                 prefs.edit()
                         .putLong(KEY_LAST_INTER, System.currentTimeMillis())
                         .apply();
+                loadInter(activity);
                 Log.d(LOG_TAG, "Inter was shown!");
 
             }

@@ -48,7 +48,7 @@ public class AppOpenAdManager implements DefaultLifecycleObserver, Application.A
 
         AdRequest request = new AdRequest.Builder().build();
         AppOpenAd.load(mApplication, AdMob.AD_UNIT_APP_OPEN, request,
-                AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
+                new AppOpenAd.AppOpenAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AppOpenAd appOpenAd) {
                         Log.d(LOG_TAG, "AppOpen loaded!");
