@@ -111,7 +111,6 @@ public class InterstitialAdManager {
 
             @Override
             public void onAdDismissedFullScreenContent() {
-                mInter = null;
                 mShowing = false;
                 Log.d(LOG_TAG, "Inter dismissed!");
             }

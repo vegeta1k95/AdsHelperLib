@@ -95,7 +95,6 @@ public class InterstitialAdManager {
 
             @Override
             public void onAdDismissed() {
-                mInter = null;
                 mShowing = false;
                 Log.d(LOG_TAG, "Inter dismissed!");
             }
