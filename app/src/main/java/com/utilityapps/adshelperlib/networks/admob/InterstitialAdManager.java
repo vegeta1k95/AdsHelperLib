@@ -113,14 +113,15 @@ public class InterstitialAdManager {
             public void onAdDismissedFullScreenContent() {
                 mShowing = false;
                 Log.d(LOG_TAG, "Inter dismissed!");
+                loadInter(activity);
             }
 
             @Override
             public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
                 mInter = null;
                 mShowing = false;
-                loadInter(activity);
                 Log.d(LOG_TAG, "Inter showing error: " + error);
+                loadInter(activity);
             }
 
             @Override
@@ -132,7 +133,6 @@ public class InterstitialAdManager {
                 prefs.edit()
                         .putLong(KEY_LAST_INTER, System.currentTimeMillis())
                         .apply();
-                loadInter(activity);
                 Log.d(LOG_TAG, "Inter was shown!");
 
             }

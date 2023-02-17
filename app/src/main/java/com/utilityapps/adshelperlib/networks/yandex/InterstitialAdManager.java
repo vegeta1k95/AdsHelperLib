@@ -90,13 +90,13 @@ public class InterstitialAdManager {
                         .putLong(KEY_LAST_INTER, System.currentTimeMillis())
                         .apply();
                 Log.d(LOG_TAG, "Inter was shown!");
-                loadInter(context);
             }
 
             @Override
             public void onAdDismissed() {
                 mShowing = false;
                 Log.d(LOG_TAG, "Inter dismissed!");
+                loadInter(context);
             }
 
             @Override public void onAdClicked() {}
