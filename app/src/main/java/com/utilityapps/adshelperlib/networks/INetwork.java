@@ -28,6 +28,7 @@ public interface INetwork {
     void setInterDelay(long millis);
 
     // Rewarded Inter
+    boolean hasWatchedRewarded();
     boolean isRewardedAvailable();
     void loadRewardedInter(@NonNull Context context);
     void showRewardedInter(@NonNull Activity activity, boolean autoLoading,

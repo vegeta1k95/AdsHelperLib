@@ -101,6 +101,11 @@ public class AdMob implements INetwork {
     }
 
     @Override
+    public boolean hasWatchedRewarded() {
+        return RewardedInterstitialAdManager.hasWatchedRewarded();
+    }
+
+    @Override
     public boolean isRewardedAvailable() {
         return RewardedInterstitialAdManager.isRewardedAvailable();
     }

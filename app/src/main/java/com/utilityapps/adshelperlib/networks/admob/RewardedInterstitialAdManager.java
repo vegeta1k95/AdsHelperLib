@@ -4,6 +4,7 @@ import static com.utilityapps.adshelperlib.AdsHelper.LOG_TAG;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,22 @@ import com.utilityapps.adshelperlib.networks.INetwork;
 public class RewardedInterstitialAdManager {
 
     private static RewardedInterstitialAd mRewarded;
+
+    private static final String PREFERENCES = "ads";
+    private static final String KEY_LAST_REWARDED = "rewarded_last_time";
+    private static final int UNLOCKED_TIME = 1800000;
+
+    public static boolean hasWatchedRewarded() {
+        SharedPreferences prefs = AdsHelper.appContext.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        long lastTime = prefs.getLong(KEY_LAST_REWARDED, 0);
+        long now = System.currentTimeMillis();
+        return (now - lastTime <= UNLOCKED_TIME);
+    }
+
+    private static void setWatchedRewarded(long time) {
+        SharedPreferences prefs = AdsHelper.appContext.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        prefs.edit().putLong(KEY_LAST_REWARDED, time).apply();
+    }
 
     public static boolean isRewardedAvailable() {
         return mRewarded != null;
@@ -94,6 +111,7 @@ public class RewardedInterstitialAdManager {
         });
         mRewarded.show(activity, rewardItem -> {
             Log.d(LOG_TAG, "User obtained reward!");
+            setWatchedRewarded(System.currentTimeMillis());
             if (onReward != null)
                 onReward.onReward();
         });

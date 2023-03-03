@@ -49,6 +49,8 @@ public class AdsHelper {
         void onInit();
     }
 
+    public static Context appContext;
+
     public static final String LOG_TAG = "MYTAG (AdHelper)";
 
     private static final String KEY_ADS_NETWORK = "ads_network";
@@ -92,6 +94,8 @@ public class AdsHelper {
     }
 
     public static void initialize(Application application, String defaultNetwork, @Nullable IOnInit onComplete) {
+
+        appContext = application.getApplicationContext();
 
         FirebaseApp.initializeApp(application);
         FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
@@ -192,6 +196,13 @@ public class AdsHelper {
 
         if (network != null && network.isInitialized())
             network.showInter(activity);
+    }
+
+    public static boolean hasWatchedRewarded() {
+        if (network != null && network.isInitialized()) {
+            return network.hasWatchedRewarded();
+        }
+        return true;
     }
 
     public static void loadRewardedInter(@Nullable Context context) {
