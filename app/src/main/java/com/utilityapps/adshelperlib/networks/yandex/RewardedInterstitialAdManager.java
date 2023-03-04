@@ -56,8 +56,13 @@ public class RewardedInterstitialAdManager {
         mRewarded = new RewardedAd(context);
         mRewarded.setAdUnitId(Yandex.AD_UNIT_REWARDED);
         mRewarded.setRewardedAdEventListener(new RewardedAdEventListener() {
-            @Override public void onAdLoaded() {}
-            @Override public void onAdFailedToLoad(@NonNull AdRequestError adRequestError) { mRewarded = null; }
+            @Override public void onAdLoaded() {
+                Log.d(LOG_TAG, "Rewarded loaded!");
+            }
+            @Override public void onAdFailedToLoad(@NonNull AdRequestError adRequestError) {
+                mRewarded = null;
+                Log.d(LOG_TAG, "Rewarded failed to load: " + adRequestError.getDescription());
+            }
             @Override public void onAdShown() {
                 mRewarded = null;
             }
